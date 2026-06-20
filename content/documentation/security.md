@@ -72,6 +72,29 @@ Severity ratings represent the determination of project members based on an eval
 The following announcements include published vulnerabilities that apply directly to Apache NiFi components.
 
 {{< vulnerability
+id="CVE-2026-44914"
+title="Missing Authorization of Restricted Permissions when Replacing Flow Contents"
+published="2026-06-20"
+severity="High"
+products="Apache NiFi"
+affectedVersions="1.12.0 to 2.9.0"
+fixedVersion="2.10.0"
+jira="NIFI-15845"
+pullRequest="11148"
+reporter="Roberto Suggi Liverani from NATO Cyber Security Centre (NCSC)" >}}
+
+Apache NiFi 1.12.0 through 2.9.0 are missing authorization when replacing Process Groups that include extension
+components with specific Required Permissions based on the Restricted annotation. The Restricted annotation indicates
+additional privileges required, but framework authorization did not check restricted status when handling requests to
+replace Process Groups. The missing authorization permits a user with general write access to add components with
+Restricted status. Apache NiFi installations that do not implement specific authorization for Restricted components are
+not subject to this vulnerability because the framework enforces write permissions as the security boundary. Upgrading
+to Apache NiFi 2.9.0 is the recommended mitigation, which removes the implementation of Restricted status authorization
+from the framework.
+
+{{</ vulnerability >}}
+
+{{< vulnerability
 id="CVE-2026-44913"
 title="Improper Escaping of Table Names in CaptureChangeMySQL"
 published="2026-06-20"
