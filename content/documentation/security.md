@@ -72,6 +72,30 @@ Severity ratings represent the determination of project members based on an eval
 The following announcements include published vulnerabilities that apply directly to Apache NiFi components.
 
 {{< vulnerability
+id="CVE-2026-54665"
+title="Missing Validation for Proxy Host Headers"
+published="2026-06-20"
+severity="Medium"
+products="Apache NiFi"
+affectedVersions="0.0.1 to 2.9.0"
+fixedVersion="2.10.0"
+jira="NIFI-15953"
+pullRequest="11268"
+reporter="Jose Rivas" >}}
+
+Apache NiFi 0.0.1 through 2.9.0 support building qualified URLs from one of several HTTP request headers that provide an
+alternative to the standard Host header without validating the values provided. Apache NiFi 1.6.0 introduced a
+configurable application property to restrict values provided in the HTTP Host header, but did not apply the validation
+to alternative Proxy and Forwarded headers. The absence of proxy host header validation allowed a client to instruct
+Apache NiFi web services to construct invalid qualified URLs for redirection or data references. Upgrading to Apache
+NiFi 2.10.0 is the recommended mitigation, which implements validation for the X-ProxyHost and X-Forwarded-Host HTTP
+request headers based on the nifi.web.proxy.host property. Enabling header validation requires configuring the
+application with HTTPS. Reverse proxy servers in front of Apache NiFi are responsible for filtering input request
+headers and providing allowed values to the application.
+
+{{</ vulnerability >}}
+
+{{< vulnerability
 id="CVE-2026-44914"
 title="Missing Authorization of Restricted Permissions when Replacing Flow Contents"
 published="2026-06-20"
