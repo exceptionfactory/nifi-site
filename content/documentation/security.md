@@ -72,6 +72,27 @@ Severity ratings represent the determination of project members based on an eval
 The following announcements include published vulnerabilities that apply directly to Apache NiFi components.
 
 {{< vulnerability
+id="CVE-2026-44911"
+title="Incorrect Authorization for Configuration Verification Requests"
+published="2026-06-20"
+severity="Low"
+products="Apache NiFi"
+affectedVersions="1.15.0 to 2.9.0"
+fixedVersion="2.10.0"
+jira="NIFI-15875"
+pullRequest="11179"
+reporter="Kaixuan Li from Nanyang Technological University" >}}
+
+Authorization handling for component configuration verification requests in Apache NiFi 1.15.0 through 2.9.0 allows
+clients with read access to submit proposed configuration properties. The proposed properties override current
+configuration, enabling users with read access to invoke predefined verification methods with alternative settings.
+Apache NiFi installations that do not implement different levels of authorization for viewing and modifying component
+configuration are not subject to this vulnerability. Upgrading to Apache NiFi 2.10.0 is the recommended mitigation,
+requiring write access to submit configuration verification requests.
+
+{{</ vulnerability >}}
+
+{{< vulnerability
 id="CVE-2026-39816"
 title="Missing Execute Code Required Permission on TinkerpopClientService"
 published="2026-04-13"
@@ -83,10 +104,13 @@ jira="NIFI-15800"
 pullRequest="11108"
 reporter="John Walker from ZeroPath" >}}
 
-The optional extension component TinkerpopClientService is missing the Restricted annotation with the Execute Code Required Permission in Apache NiFi 2.0.0-M1 through 2.8.0. The TinkerpopClientService
-supports configuration of ByteCode Submission for the Script Submission Type, enabling Groovy Script execution in the service prior to submitting the query. The missing Restricted annotation allows
-users without the Execute Code Permission to configure the Service in installations that use fine-grained authorization and have the optional TinkerpopClientService installed. Apache NiFi
-installations that do not have the nifi-other-graph-services-nar installed are not subject to this vulnerability. Upgrading to Apache NiFi 2.9.0 is the recommended mitigation.
+The optional extension component TinkerpopClientService is missing the Restricted annotation with the Execute Code
+Required Permission in Apache NiFi 2.0.0-M1 through 2.8.0. The TinkerpopClientService supports configuration of ByteCode
+Submission for the Script Submission Type, enabling Groovy Script execution in the service prior to submitting the
+query. The missing Restricted annotation allows users without the Execute Code Permission to configure the Service in
+installations that use fine-grained authorization and have the optional TinkerpopClientService installed. Apache NiFi
+installations that do not have the nifi-other-graph-services-nar installed are not subject to this vulnerability.
+Upgrading to Apache NiFi 2.9.0 is the recommended mitigation.
 
 {{</ vulnerability >}}
 
