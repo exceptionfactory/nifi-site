@@ -72,6 +72,26 @@ Severity ratings represent the determination of project members based on an eval
 The following announcements include published vulnerabilities that apply directly to Apache NiFi components.
 
 {{< vulnerability
+id="CVE-2026-44913"
+title="Improper Escaping of Table Names in CaptureChangeMySQL"
+published="2026-06-20"
+severity="Medium"
+products="Apache NiFi"
+affectedVersions="1.2.0 to 2.9.0"
+fixedVersion="2.10.0"
+jira="NIFI-15905"
+pullRequest="11206"
+reporter="Roberto Suggi Liverani from NATO Cyber Security Centre (NCSC)" >}}
+
+Improper escaping of database table names in the CaptureChangeMySQL Processor included with Apache NiFi 1.2.0 through
+2.9.0 allows for injecting SQL commands using crafted naming. Manual quoted boundaries added in Apache NiFi 1.8.0
+narrowed the scope of potential injection options, but did not cover additional strategies. Apache NiFi installations
+that do not use the CaptureChangeMySQL Processor are not subject to this vulnerability. Upgrading to Apache NiFi 2.10.0
+is the recommended mitigation, which incorporates more robust identifier escaping.
+
+{{</ vulnerability >}}
+
+{{< vulnerability
 id="CVE-2026-44911"
 title="Incorrect Authorization for Configuration Verification Requests"
 published="2026-06-20"
