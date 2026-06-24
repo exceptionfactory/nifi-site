@@ -563,7 +563,7 @@
 </div>
     <main>
   <div class="uk-container">
-    <h1 id="apache-hahahugoshortcode560s0hbhb-security">Apache <span class="ni">Ni</span><span class="fi">Fi</span>
+    <h1 id="apache-hahahugoshortcode19s0hbhb-security">Apache <span class="ni">Ni</span><span class="fi">Fi</span>
  Security</h1>
 <p>Apache NiFi welcomes the responsible reporting of security vulnerabilities. Project Management Committee members will
 collaborate and respond to potential vulnerabilities, providing an assessment of the concern and a plan of action to
@@ -577,16 +577,21 @@ policy for general guidelines applicable disclosure of security issues for Apach
 <li>Send a message to the project mailing lists disclosing a security vulnerability to the public</li>
 <li>Send a message to the project Slack instance disclosing a security vulnerability to the public</li>
 </ul>
-<h2 id="reporting-guidelines">Reporting Guidelines</h2>
-<p>Configuring dangerous operating system commands or custom scripts is not a project security vulnerability.
-Authenticated and authorized users are responsible for the security of operating system commands and custom
-code.</p>
-<p>Apache NiFi provides a framework for developing processing pipelines using standard and custom
-components. The framework supports configurable permissions that enable authorized users to execute code
+<h2 id="security-model">Security Model</h2>
+<p>Apache NiFi provides a framework for developing processing pipelines using standard and custom components. Authenticated
+and authorized users are responsible for the security of operating system commands and custom code. Privileged users are
+also responsible for designing processing pipelines with security measures appropriate to the level of trust expected
+for systems and services providing input to such processing pipelines.</p>
+<p>Configuring dangerous operating system commands or custom scripts is not a project security vulnerability.</p>
+<p>The framework supports configurable permissions that enable authorized users to execute code
 using several standard components. Components such as ExecuteProcess and ExecuteStreamCommand support
 running operating system commands, while other scripted components support executing custom code using
 different programming languages. Configuring these components with untrusted commands or arguments is
 contrary to best practices, but it does not constitute of security issue for remediation.</p>
+<p>The application implements process management and diagnostic operations using the HTTP protocol, with the default
+configuration binding to the localhost address. Privileged administrators can configure process management on an
+alternative address, which can alter the security posture of the application. It is the responsibility of privileged
+administrators to implement other protection strategies when changing the default bind address.</p>
 <h2 id="reporting-process">Reporting Process</h2>
 <ul>
 <li>Notify the project on initial discovery of a potential security vulnerability</li>
@@ -614,6 +619,414 @@ contrary to best practices, but it does not constitute of security issue for rem
 </ul>
 <h1 id="published-vulnerabilities">Published Vulnerabilities</h1>
 <p>The following announcements include published vulnerabilities that apply directly to Apache NiFi components.</p>
+<div class="vulnerability-container">
+  <h3 id="CVE-2026-54665">CVE-2026-54665</h3>
+
+  <ul>
+    <li>Title: Missing Validation for Proxy Host Headers</li>
+    <li>Published: 2026-06-20</li>
+    <li>Severity: Medium</li>
+    <li>Products: Apache NiFi</li>
+    <li>Affected Versions: 0.0.1 to 2.9.0</li>
+    <li>Fixed Versions: 2.10.0</li>
+    <li>Reporter: Jose Rivas</li>
+    <li>References
+      <ul>
+        <li>
+          CVE Record: <a href="https://www.cve.org/CVERecord?id=CVE-2026-54665" target="_blank">CVE-2026-54665</a>
+        </li>
+        <li>
+          NVD Record: <a href="https://nvd.nist.gov/vuln/detail/CVE-2026-54665" target="_blank">CVE-2026-54665</a>
+        </li>
+        <li>
+          Apache Jira Issue: <a href="https://issues.apache.org/jira/browse/NIFI-15953" target="_blank">NIFI-15953</a>
+        </li>
+        
+        <li>
+          GitHub Pull Request: <a href="https://github.com/apache/nifi/pull/11268" target="_blank">11268</a>
+        </li>
+        
+      </ul>
+    </li>
+  </ul>
+
+  <p class="vulnerability-description">
+    
+
+Apache NiFi 0.0.1 through 2.9.0 support building qualified URLs from one of several HTTP request headers that provide an
+alternative to the standard Host header without validating the values provided. Apache NiFi 1.6.0 introduced a
+configurable application property to restrict values provided in the HTTP Host header, but did not apply the validation
+to alternative Proxy and Forwarded headers. The absence of proxy host header validation allowed a client to instruct
+Apache NiFi web services to construct invalid qualified URLs for redirection or data references. Upgrading to Apache
+NiFi 2.10.0 is the recommended mitigation, which implements validation for the X-ProxyHost and X-Forwarded-Host HTTP
+request headers based on the nifi.web.proxy.host property. Enabling header validation requires configuring the
+application with HTTPS. Reverse proxy servers in front of Apache NiFi are responsible for filtering input request
+headers and providing allowed values to the application.
+
+
+  </p>
+</div>
+<div class="vulnerability-container">
+  <h3 id="CVE-2026-44914">CVE-2026-44914</h3>
+
+  <ul>
+    <li>Title: Missing Authorization of Restricted Permissions when Replacing Flow Contents</li>
+    <li>Published: 2026-06-20</li>
+    <li>Severity: High</li>
+    <li>Products: Apache NiFi</li>
+    <li>Affected Versions: 1.12.0 to 2.9.0</li>
+    <li>Fixed Versions: 2.10.0</li>
+    <li>Reporter: Roberto Suggi Liverani from NATO Cyber Security Centre (NCSC)</li>
+    <li>References
+      <ul>
+        <li>
+          CVE Record: <a href="https://www.cve.org/CVERecord?id=CVE-2026-44914" target="_blank">CVE-2026-44914</a>
+        </li>
+        <li>
+          NVD Record: <a href="https://nvd.nist.gov/vuln/detail/CVE-2026-44914" target="_blank">CVE-2026-44914</a>
+        </li>
+        <li>
+          Apache Jira Issue: <a href="https://issues.apache.org/jira/browse/NIFI-15845" target="_blank">NIFI-15845</a>
+        </li>
+        
+        <li>
+          GitHub Pull Request: <a href="https://github.com/apache/nifi/pull/11148" target="_blank">11148</a>
+        </li>
+        
+      </ul>
+    </li>
+  </ul>
+
+  <p class="vulnerability-description">
+    
+
+Apache NiFi 1.12.0 through 2.9.0 are missing authorization when replacing Process Groups that include extension
+components with specific Required Permissions based on the Restricted annotation. The Restricted annotation indicates
+additional privileges required, but framework authorization did not check restricted status when handling requests to
+replace Process Groups. The missing authorization permits a user with general write access to add components with
+Restricted status. Apache NiFi installations that do not implement specific authorization for Restricted components are
+not subject to this vulnerability because the framework enforces write permissions as the security boundary. Upgrading
+to Apache NiFi 2.10.0 is the recommended mitigation, which removes the implementation of Restricted status authorization
+from the framework.
+
+
+  </p>
+</div>
+<div class="vulnerability-container">
+  <h3 id="CVE-2026-44913">CVE-2026-44913</h3>
+
+  <ul>
+    <li>Title: Improper Escaping of Table Names in CaptureChangeMySQL</li>
+    <li>Published: 2026-06-20</li>
+    <li>Severity: Medium</li>
+    <li>Products: Apache NiFi</li>
+    <li>Affected Versions: 1.2.0 to 2.9.0</li>
+    <li>Fixed Versions: 2.10.0</li>
+    <li>Reporter: Roberto Suggi Liverani from NATO Cyber Security Centre (NCSC)</li>
+    <li>References
+      <ul>
+        <li>
+          CVE Record: <a href="https://www.cve.org/CVERecord?id=CVE-2026-44913" target="_blank">CVE-2026-44913</a>
+        </li>
+        <li>
+          NVD Record: <a href="https://nvd.nist.gov/vuln/detail/CVE-2026-44913" target="_blank">CVE-2026-44913</a>
+        </li>
+        <li>
+          Apache Jira Issue: <a href="https://issues.apache.org/jira/browse/NIFI-15905" target="_blank">NIFI-15905</a>
+        </li>
+        
+        <li>
+          GitHub Pull Request: <a href="https://github.com/apache/nifi/pull/11206" target="_blank">11206</a>
+        </li>
+        
+      </ul>
+    </li>
+  </ul>
+
+  <p class="vulnerability-description">
+    
+
+Improper escaping of database table names in the CaptureChangeMySQL Processor included with Apache NiFi 1.2.0 through
+2.9.0 allows for injecting SQL commands using crafted naming. Manual quoted boundaries added in Apache NiFi 1.8.0
+narrowed the scope of potential injection options, but did not cover additional strategies. Apache NiFi installations
+that do not use the CaptureChangeMySQL Processor are not subject to this vulnerability. Upgrading to Apache NiFi 2.10.0
+is the recommended mitigation, which incorporates more robust identifier escaping.
+
+
+  </p>
+</div>
+<div class="vulnerability-container">
+  <h3 id="CVE-2026-44911">CVE-2026-44911</h3>
+
+  <ul>
+    <li>Title: Incorrect Authorization for Configuration Verification Requests</li>
+    <li>Published: 2026-06-20</li>
+    <li>Severity: Low</li>
+    <li>Products: Apache NiFi</li>
+    <li>Affected Versions: 1.15.0 to 2.9.0</li>
+    <li>Fixed Versions: 2.10.0</li>
+    <li>Reporter: Kaixuan Li from Nanyang Technological University</li>
+    <li>References
+      <ul>
+        <li>
+          CVE Record: <a href="https://www.cve.org/CVERecord?id=CVE-2026-44911" target="_blank">CVE-2026-44911</a>
+        </li>
+        <li>
+          NVD Record: <a href="https://nvd.nist.gov/vuln/detail/CVE-2026-44911" target="_blank">CVE-2026-44911</a>
+        </li>
+        <li>
+          Apache Jira Issue: <a href="https://issues.apache.org/jira/browse/NIFI-15875" target="_blank">NIFI-15875</a>
+        </li>
+        
+        <li>
+          GitHub Pull Request: <a href="https://github.com/apache/nifi/pull/11179" target="_blank">11179</a>
+        </li>
+        
+      </ul>
+    </li>
+  </ul>
+
+  <p class="vulnerability-description">
+    
+
+Authorization handling for component configuration verification requests in Apache NiFi 1.15.0 through 2.9.0 allows
+clients with read access to submit proposed configuration properties. The proposed properties override current
+configuration, enabling users with read access to invoke predefined verification methods with alternative settings.
+Apache NiFi installations that do not implement different levels of authorization for viewing and modifying component
+configuration are not subject to this vulnerability. Upgrading to Apache NiFi 2.10.0 is the recommended mitigation,
+requiring write access to submit configuration verification requests.
+
+
+  </p>
+</div>
+<div class="vulnerability-container">
+  <h3 id="CVE-2026-39816">CVE-2026-39816</h3>
+
+  <ul>
+    <li>Title: Missing Execute Code Required Permission on TinkerpopClientService</li>
+    <li>Published: 2026-04-13</li>
+    <li>Severity: High</li>
+    <li>Products: Apache NiFi</li>
+    <li>Affected Versions: 2.0.0-M1 to 2.8.0</li>
+    <li>Fixed Versions: 2.9.0</li>
+    <li>Reporter: John Walker from ZeroPath</li>
+    <li>References
+      <ul>
+        <li>
+          CVE Record: <a href="https://www.cve.org/CVERecord?id=CVE-2026-39816" target="_blank">CVE-2026-39816</a>
+        </li>
+        <li>
+          NVD Record: <a href="https://nvd.nist.gov/vuln/detail/CVE-2026-39816" target="_blank">CVE-2026-39816</a>
+        </li>
+        <li>
+          Apache Jira Issue: <a href="https://issues.apache.org/jira/browse/NIFI-15800" target="_blank">NIFI-15800</a>
+        </li>
+        
+        <li>
+          GitHub Pull Request: <a href="https://github.com/apache/nifi/pull/11108" target="_blank">11108</a>
+        </li>
+        
+      </ul>
+    </li>
+  </ul>
+
+  <p class="vulnerability-description">
+    
+
+The optional extension component TinkerpopClientService is missing the Restricted annotation with the Execute Code
+Required Permission in Apache NiFi 2.0.0-M1 through 2.8.0. The TinkerpopClientService supports configuration of ByteCode
+Submission for the Script Submission Type, enabling Groovy Script execution in the service prior to submitting the
+query. The missing Restricted annotation allows users without the Execute Code Permission to configure the Service in
+installations that use fine-grained authorization and have the optional TinkerpopClientService installed. Apache NiFi
+installations that do not have the nifi-other-graph-services-nar installed are not subject to this vulnerability.
+Upgrading to Apache NiFi 2.9.0 is the recommended mitigation.
+
+
+  </p>
+</div>
+<div class="vulnerability-container">
+  <h3 id="CVE-2026-25903">CVE-2026-25903</h3>
+
+  <ul>
+    <li>Title: Missing Authorization of Restricted Permissions for Component Updates</li>
+    <li>Published: 2026-02-16</li>
+    <li>Severity: High</li>
+    <li>Products: Apache NiFi</li>
+    <li>Affected Versions: 1.1.0 to 2.7.2</li>
+    <li>Fixed Versions: 2.8.0</li>
+    <li>Reporter: David Handermann</li>
+    <li>References
+      <ul>
+        <li>
+          CVE Record: <a href="https://www.cve.org/CVERecord?id=CVE-2026-25903" target="_blank">CVE-2026-25903</a>
+        </li>
+        <li>
+          NVD Record: <a href="https://nvd.nist.gov/vuln/detail/CVE-2026-25903" target="_blank">CVE-2026-25903</a>
+        </li>
+        <li>
+          Apache Jira Issue: <a href="https://issues.apache.org/jira/browse/NIFI-15567" target="_blank">NIFI-15567</a>
+        </li>
+        
+        <li>
+          GitHub Pull Request: <a href="https://github.com/apache/nifi/pull/10871" target="_blank">10871</a>
+        </li>
+        
+      </ul>
+    </li>
+  </ul>
+
+  <p class="vulnerability-description">
+    
+
+Apache NiFi 1.1.0 through 2.7.2 are missing authorization when updating configuration properties on extension components
+that have specific Required Permissions based on the Restricted annotation. The Restricted annotation indicates
+additional privileges required to add the annotated component to the flow configuration, but framework authorization did
+not check restricted status when updating a component previously added. The missing authorization requires a more
+privileged user to add a restricted component to the flow configuration, but permits a less privileged user to make
+property configuration changes. Apache NiFi installations that do not implement different levels of authorization for
+Restricted components are not subject to this vulnerability because the framework enforces write permissions as the
+security boundary. Upgrading to Apache NiFi 2.8.0 is the recommended mitigation.
+
+
+  </p>
+</div>
+<div class="vulnerability-container">
+  <h3 id="CVE-2025-66524">CVE-2025-66524</h3>
+
+  <ul>
+    <li>Title: Deserialization of Untrusted Data in GetAsanaObject Processor</li>
+    <li>Published: 2025-12-19</li>
+    <li>Severity: High</li>
+    <li>Products: Apache NiFi</li>
+    <li>Affected Versions: 1.20.0 to 2.6.0</li>
+    <li>Fixed Versions: 2.7.0</li>
+    <li>Reporter: Jaeyeong Lee</li>
+    <li>References
+      <ul>
+        <li>
+          CVE Record: <a href="https://www.cve.org/CVERecord?id=CVE-2025-66524" target="_blank">CVE-2025-66524</a>
+        </li>
+        <li>
+          NVD Record: <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-66524" target="_blank">CVE-2025-66524</a>
+        </li>
+        <li>
+          Apache Jira Issue: <a href="https://issues.apache.org/jira/browse/NIFI-15292" target="_blank">NIFI-15292</a>
+        </li>
+        
+        <li>
+          GitHub Pull Request: <a href="https://github.com/apache/nifi/pull/10599" target="_blank">10599</a>
+        </li>
+        
+      </ul>
+    </li>
+  </ul>
+
+  <p class="vulnerability-description">
+    
+
+Apache NiFi 1.20.0 through 2.6.0 include the GetAsanaObject Processor, which requires integration with a configurable
+Distribute Map Cache Client Service for storing and retrieving state information. The GetAsanaObject Processor used
+generic Java Object serialization and deserialization without filtering. Unfiltered Java object deserialization does not
+provide protection against crafted state information stored in the cache server configured for GetAsanaObject.
+Exploitation requires an Apache NiFi system running with the GetAsanaObject Processor, and direct access to the
+configured cache server. Upgrading to Apache NiFi 2.7.0 is the recommended mitigation, which replaces Java Object
+serialization with JSON serialization. Removing the GetAsanaObject Processor located in the nifi-asana-processors-nar
+bundle also prevents exploitation.
+
+
+  </p>
+</div>
+<div class="vulnerability-container">
+  <h3 id="CVE-2025-27017">CVE-2025-27017</h3>
+
+  <ul>
+    <li>Title: Potential Insertion of MongoDB Password in Provenance Record</li>
+    <li>Published: 2025-03-11</li>
+    <li>Severity: Medium</li>
+    <li>Products: Apache NiFi</li>
+    <li>Affected Versions: 1.13.0 to 2.2.0</li>
+    <li>Fixed Versions: 2.3.0</li>
+    <li>Reporter: Robert Creese</li>
+    <li>References
+      <ul>
+        <li>
+          CVE Record: <a href="https://www.cve.org/CVERecord?id=CVE-2025-27017" target="_blank">CVE-2025-27017</a>
+        </li>
+        <li>
+          NVD Record: <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-27017" target="_blank">CVE-2025-27017</a>
+        </li>
+        <li>
+          Apache Jira Issue: <a href="https://issues.apache.org/jira/browse/NIFI-14272" target="_blank">NIFI-14272</a>
+        </li>
+        
+        <li>
+          GitHub Pull Request: <a href="https://github.com/apache/nifi/pull/9723" target="_blank">9723</a>
+        </li>
+        
+      </ul>
+    </li>
+  </ul>
+
+  <p class="vulnerability-description">
+    
+
+Apache NiFi 1.13.0 through 2.2.0 includes the username and password used to authenticate with MongoDB in the NiFi
+provenance events that MongoDB components generate during processing. An authorized user with read access to the
+provenance events of those processors may see the credentials information. Upgrading to Apache NiFi 2.3.0 is the
+recommended mitigation, which removes the credentials from provenance event records.
+
+
+  </p>
+</div>
+<div class="vulnerability-container">
+  <h3 id="CVE-2024-56512">CVE-2024-56512</h3>
+
+  <ul>
+    <li>Title: Missing Complete Authorization for Parameter and Service References</li>
+    <li>Published: 2024-12-27</li>
+    <li>Severity: Low</li>
+    <li>Products: Apache NiFi</li>
+    <li>Affected Versions: 1.10.0 to 2.0.0</li>
+    <li>Fixed Versions: 2.1.0</li>
+    <li>Reporter: Matt Gilman</li>
+    <li>References
+      <ul>
+        <li>
+          CVE Record: <a href="https://www.cve.org/CVERecord?id=CVE-2024-56512" target="_blank">CVE-2024-56512</a>
+        </li>
+        <li>
+          NVD Record: <a href="https://nvd.nist.gov/vuln/detail/CVE-2024-56512" target="_blank">CVE-2024-56512</a>
+        </li>
+        <li>
+          Apache Jira Issue: <a href="https://issues.apache.org/jira/browse/NIFI-13976" target="_blank">NIFI-13976</a>
+        </li>
+        
+        <li>
+          GitHub Pull Request: <a href="https://github.com/apache/nifi/pull/9535" target="_blank">9535</a>
+        </li>
+        
+      </ul>
+    </li>
+  </ul>
+
+  <p class="vulnerability-description">
+    
+
+Apache NiFi 1.10.0 through 2.0.0 are missing fine-grained authorization checking for Parameter Contexts, referenced
+Controller Services, and referenced Parameter Providers, when creating new Process Groups. Creating a new Process Group
+can include binding to a Parameter Context, but in cases where the Process Group did not reference any Parameter values,
+the framework did not check user authorization for the bound Parameter Context. Missing authorization for a bound
+Parameter Context enabled clients to download non-sensitive Parameter values after creating the Process Group. Creating
+a new Process Group can also include referencing existing Controller Services or Parameter Providers. The framework did
+not check user authorization for referenced Controller Services or Parameter Providers, enabling clients to create
+Process Groups and use these components that were otherwise unauthorized. This vulnerability is limited in scope to
+authenticated users authorized to create Process Groups. The scope is further limited to deployments with
+component-based authorization policies. Upgrading to Apache NiFi 2.1.0 is the recommended mitigation, which includes
+authorization checking for Parameter and Controller Service references on Process Group creation.
+
+
+  </p>
+</div>
 <div class="vulnerability-container">
   <h3 id="CVE-2024-52067">CVE-2024-52067</h3>
 
@@ -2264,7 +2677,7 @@ pull request when merging changes. Users running a prior release should upgrade 
           </a>
         </p>
         <p>
-          Copyright &copy; 2024 The Apache Software Foundation under the terms of the
+          Copyright &copy; 2026 The Apache Software Foundation under the terms of the
           <a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache License, Version 2.0</a>
         </p>
         <p>
@@ -2278,7 +2691,7 @@ pull request when merging changes. Users running a prior release should upgrade 
           <li><a href="https://issues.apache.org/jira/browse/NIFI">Issues</a></li>
           <li><a href="https://github.com/apache/nifi">Source</a></li>
           <li><a href="https://www.linkedin.com/company/apache-nifi/">LinkedIn</a></li>
-          <li><a href="https://join.slack.com/t/apachenifi/shared_invite/zt-2ccusmst2-l2KrTzJLrGcHOO0V7~XD4g">Slack</a></li>
+          <li><a href="https://join.slack.com/t/apachenifi/shared_invite/zt-11njbtkdx-ZRU8FKYSWoEHRJetidy0zA">Slack</a></li>
           <li><a href="https://nifi.apache.org/documentation/security/">Security</a></li>
         </ul>
       </div>
