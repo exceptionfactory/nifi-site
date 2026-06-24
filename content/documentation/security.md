@@ -113,7 +113,7 @@ additional privileges required, but framework authorization did not check restri
 replace Process Groups. The missing authorization permits a user with general write access to add components with
 Restricted status. Apache NiFi installations that do not implement specific authorization for Restricted components are
 not subject to this vulnerability because the framework enforces write permissions as the security boundary. Upgrading
-to Apache NiFi 2.9.0 is the recommended mitigation, which removes the implementation of Restricted status authorization
+to Apache NiFi 2.10.0 is the recommended mitigation, which removes the implementation of Restricted status authorization
 from the framework.
 
 {{</ vulnerability >}}
